@@ -8802,6 +8802,9 @@ class TestUtilsScript(TestQNN):
         )
 
     def test_cli(self):
+        # TODO: Add gpu support in cli.py
+        if get_backend_type(self.backend) == QnnExecuTorchBackendType.kGpuBackend:
+            self.skipTest("Currently, the GPU does not support CLI.")
         with tempfile.TemporaryDirectory() as tmp_dir:
             sample_input = torch.randn(1, 2, 3, 4)
             ep = torch.export.export(Relu(), (sample_input,))  # noqa: F405
@@ -8824,6 +8827,8 @@ class TestUtilsScript(TestQNN):
                 f"{tmp_dir}/input_list",
                 "--soc_model",
                 self.soc_model,
+                "--backend",
+                self.backend,
             ]
             subprocess.run(cmds, stdout=subprocess.DEVNULL)
             self.assertTrue(os.path.isfile(f"{tmp_dir}/q_out/relu_quantized.pt2"))
@@ -8839,6 +8844,8 @@ class TestUtilsScript(TestQNN):
                 f"{tmp_dir}/c_out",
                 "--soc_model",
                 self.soc_model,
+                "--backend",
+                self.backend,
             ]
             subprocess.run(cmds, stdout=subprocess.DEVNULL)
             self.assertTrue(os.path.isfile(f"{tmp_dir}/c_out/relu_quantized.pte"))
@@ -8863,6 +8870,8 @@ class TestUtilsScript(TestQNN):
                 self.target,
                 "--device",
                 self.device,
+                "--backend",
+                self.backend,
             ]
             if self.host:
                 cmds.extend(["--host", self.host])
@@ -8870,6 +8879,9 @@ class TestUtilsScript(TestQNN):
             self.assertTrue(os.path.isfile(f"{tmp_dir}/e_out/Result_0/output_0.pt"))
 
     def test_cli_with_input_list_assignment(self):
+        # TODO: Add gpu support in cli.py
+        if get_backend_type(self.backend) == QnnExecuTorchBackendType.kGpuBackend:
+            self.skipTest("Currently, the GPU does not support CLI.")
         with tempfile.TemporaryDirectory() as tmp_dir:
             sample_input = torch.randn(1, 2, 3, 4)
             sample_input2 = torch.randn(1, 2, 3, 4)
@@ -8896,6 +8908,8 @@ class TestUtilsScript(TestQNN):
                 f"{tmp_dir}/input_list",
                 "--soc_model",
                 self.soc_model,
+                "--backend",
+                self.backend,
             ]
             subprocess.run(cmds, stdout=subprocess.DEVNULL)
             self.assertTrue(os.path.isfile(f"{tmp_dir}/q_out/sub_quantized.pt2"))
@@ -8911,6 +8925,8 @@ class TestUtilsScript(TestQNN):
                 f"{tmp_dir}/c_out",
                 "--soc_model",
                 self.soc_model,
+                "--backend",
+                self.backend,
             ]
             subprocess.run(cmds, stdout=subprocess.DEVNULL)
             self.assertTrue(os.path.isfile(f"{tmp_dir}/c_out/sub_quantized.pte"))
@@ -8935,6 +8951,8 @@ class TestUtilsScript(TestQNN):
                 self.build_folder,
                 "--input_list",
                 f"{tmp_dir}/input_list",
+                "--backend",
+                self.backend,
             ]
             if self.host:
                 cmds.extend(["--host", self.host])
